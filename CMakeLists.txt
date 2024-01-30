@@ -7,6 +7,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
+add_compile_options(-O3)
 
 add_library(Vector STATIC
         src/VecIO.c
@@ -14,5 +15,4 @@ add_library(Vector STATIC
 )
 
 add_executable(Test test/test.c)
-target_compile_options(Test PRIVATE -O1)
 target_link_libraries(Test Vector)

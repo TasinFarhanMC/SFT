@@ -106,7 +106,7 @@ bool Vec_Insert(void** vec, struct Vec_Info* info, size_t pos, const void* data,
  * @param count The Number of Elemenrs to erase
  * @return Number of erased Elements
  */
-size_t Vec_Erase(void* vec, struct Vec_Info* info, size_t pos, size_t count);
+size_t Vec_Erase(void** vec, struct Vec_Info* info, size_t pos, size_t count);
 
 /**
  * @brief Returns The size of the Vector
