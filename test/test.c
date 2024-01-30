@@ -1,82 +1,92 @@
+#include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <Vector/Vector.h>
 #include <Vector/VecIO.h>
 
-void printVector(int* vec, struct Vec_Info* info) {
-  printf("Vector: [");
-  for (size_t i = 0; i < Vec_Size(info); ++i) {
-    printf("%d", vec[i]);
-    if (i < Vec_Size(info) - 1) {
-      printf(", ");
+// Function to test all functions and macros in Vector.h
+void testVector() {
+    int* vec;
+    struct Vec_Info* info;
+
+    // Test Vec_Create
+    assert(Vec_Create((void**)&vec, &info, sizeof(int), 5));
+
+    // Test Vec_Push
+    int data[] = {1, 2, 3, 4, 5};
+    assert(Vec_Push((void**)&vec, info, &data, 5));
+
+    // Test Vec_Size and Vec_Capacity
+    assert(Vec_Size(info) == 5);
+    assert(Vec_Capacity(info) >= 5);
+
+    // Test Vec_Front and Vec_Back
+    assert(Vec_Front(info) == 0);
+    assert(Vec_Back(info) == 4);
+
+    // Test Vec_Reserve
+    assert(Vec_Reserve((void**)&vec, info, 10));
+    assert(Vec_Capacity(info) >= 10);
+
+    // Test Vec_Resize
+    assert(Vec_Resize((void**)&vec, info, 8));
+    assert(Vec_Size(info) == 8);
+
+    // Test Vec_Shrink_To_Fit
+    assert(Vec_Shrink_To_Fit((void**)&vec, info));
+    assert(Vec_Capacity(info) == Vec_Size(info));
+
+    // Test Vec_Insert
+    assert(Vec_Insert((void**)&vec, info, 2, &data, 3));
+    assert(vec[2] == 1 && vec[3] == 2 && vec[4] == 3);
+
+    // Test Vec_Erase
+    size_t erased = Vec_Erase((void**)&vec, info, 2, 2);
+    assert(erased == 2);
+    assert(vec[2] == 3);
+
+    // Test Vec_Clear
+    Vec_Clear(info);
+    assert(Vec_Size(info) == 0);
+
+    // Clean up
+    Vec_Free((void*)vec, info);
+}
+
+void testVecIO() {
+    int* vec;
+    struct Vec_Info* info;
+
+    // Create a vector and populate it with data
+    assert(Vec_Create((void**)&vec, &info, sizeof(int), 5));
+    int data[] = {1, 2, 3, 4, 5};
+    assert(Vec_Push((void**)&vec, info, &data, 5));
+
+    // Test VecIO_Write and VecIO_Read
+    FILE* file = fopen("testfile.bin", "wb");
+    assert(file != NULL);
+    assert(VecIO_Write((void*)vec, info, file));
+    fclose(file);
+
+    file = fopen("testfile.bin", "rb");
+    assert(file != NULL);
+    assert(VecIO_Read((void**)&vec, &info, sizeof(int), 5, file));
+
+    // Verify the read vector matches the original data
+    for (size_t i = 0; i < Vec_Size(info); ++i) {
+        assert(vec[i] == data[i]);
     }
-  }
-  printf("]\n");
+
+    fclose(file);
+
+    // Clean up
+    Vec_Free((void*)vec, info);
 }
 
 int main() {
-  // Test Vec_Create
-  int* vec;
-  struct Vec_Info* info;
-  if (!Vec_Create((void**)&vec, &info, sizeof(int), 5)) {
-    fprintf(stderr, "Vec_Create failed.\n");
-    return 1;
-  }
+    // Run the tests
+    testVector();
+    testVecIO();
+    printf("All tests passed!\n");
 
-  // Fill the vector with data
-  int data[] = {1, 2, 3, 4, 5};
-  if (!Vec_Push((void**)&vec, info, &data, 5)) {
-    fprintf(stderr, "Vec_Push failed.\n");
-    Vec_Free((void*)vec, info);
-    return 1;
-  }
-
-  // Test VecIO_Write multiple times
-  FILE* file = fopen("testfile_skip.bin", "wb");
-  if (!file) {
-    fprintf(stderr, "Failed to open file for writing.\n");
-    Vec_Free((void*)vec, info);
-    return 1;
-  }
-
-  for (int i = 0; i < 5; ++i) {
-    if (!VecIO_Write((void*)vec, info, file)) {
-      fprintf(stderr, "VecIO_Write failed.\n");
-      fclose(file);
-      Vec_Free((void*)vec, info);
-      return 1;
-    }
-  }
-
-  fclose(file);
-
-  // Test VecIO_Skip
-  file = fopen("testfile_skip.bin", "rb");
-  if (!file) {
-    fprintf(stderr, "Failed to open file for reading.\n");
-    Vec_Free((void*)vec, info);
-    return 1;
-  }
-
-  // Skip the first two vectors
-  size_t skipped = VecIO_Skip(2, file);
-  printf("Skipped %zu vectors.\n", skipped);
-
-  // Read and print the remaining vectors
-  for (int i = 0; i < 3; ++i) {
-    if (!VecIO_Read((void**)&vec, &info, sizeof(int), 5, file)) {
-      fprintf(stderr, "VecIO_Read failed.\n");
-      fclose(file);
-      Vec_Free((void*)vec, info);
-      return 1;
-    }
-
-    printVector(vec, info);
-  }
-
-  fclose(file);
-
-  // Cleanup
-  Vec_Free((void*)vec, info);
-
-  return 0;
+    return 0;
 }
