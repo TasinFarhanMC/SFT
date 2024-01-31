@@ -110,24 +110,24 @@ size_t Vec_Erase(void** vec, struct Vec_Info* info, size_t pos, size_t count);
 
 /**
  * @brief Returns The size of the Vector
- * @param info
+ * @param info The Vec_Info Pointer
  */
 #define Vec_Size(info) (info->size)
 
 /**
  * @brief Returns The capacity of the Vector
- * @param info
+ * @param info The Vec_Info Pointer
  */
 #define Vec_Capacity(info) (info->capacity)
 
 /**
  * @brief Checks if the Vector is empty
- * @param info
+ * @param info The Vec_Info Pointer
  */
 #define Vec_Empty(info) (info->size == 0)
 
 /**
  * @brief Clears the Vector
- * @param info
+ * @param info The Vec_Info Pointer
  */
 #define Vec_Clear(info) (info->size = 0)

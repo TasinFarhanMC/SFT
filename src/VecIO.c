@@ -100,4 +100,3 @@ size_t VecIO_Skip(const size_t count, FILE* file) {
 
   return skips;
 }
-
