@@ -3,15 +3,15 @@
 
 #define ceilf(value) ((size_t)value + (value > (size_t)value))
 
-bool Vec_Create(void** vec, struct Vec_Info** info, const size_t elem_size, const size_t growth) {
-  *vec = malloc(growth * elem_size);
-  if (*vec == NULL) {
+bool Vec_Create(void** data, struct Vec_Info** info, const uint16_t elem_size, const uint32_t growth) {
+  *data = malloc(growth * elem_size);
+  if (*data == NULL) {
     return false;
   }
 
   (*info) = malloc(sizeof(struct Vec_Info));
   if (*info == NULL) {
-    free(*vec);
+    free(*data);
     return false;
   }
 
@@ -23,19 +23,19 @@ bool Vec_Create(void** vec, struct Vec_Info** info, const size_t elem_size, cons
   return true;
 }
 
-bool Vec_Push(void** vec, struct Vec_Info* info, const void* data, const size_t size) {
+bool Vec_Push(void** data, struct Vec_Info* info, const void* push_data, const size_t push_size) {
   if (info->capacity == info->size) {
-    info->capacity += (size > info->growth) ? ceilf((float)(size) / info->growth) * info->growth : info->growth;
+    info->capacity += (push_size > info->growth) ? ceilf((float)(push_size) / info->growth) * info->growth : info->growth;
 
-    void* new_vec = realloc(*vec, info->capacity * info->elem_size);
-    if (new_vec == NULL) {
+    void* new_dataPtr = realloc(*data, info->capacity * info->elem_size);
+    if (new_dataPtr == NULL) {
       return false;
     }
-    *vec = new_vec;
+    *data = new_dataPtr;
   }
 
-  memcpy(*vec + info->size * info->elem_size, data, size * info->elem_size);
-  info->size += size;
+  memcpy(*data + info->size * info->elem_size, push_data, push_size * info->elem_size);
+  info->size += push_size;
   return true;
 }
 
@@ -45,64 +45,64 @@ size_t Vec_Pop(struct Vec_Info* info, const size_t count) {
   return old_size - info->size;
 }
 
-bool Vec_Reserve(void** vec, struct Vec_Info* info, const size_t capacity) {
+bool Vec_Reserve(void** data, struct Vec_Info* info, const size_t capacity) {
   info->capacity = capacity;
-  void* new_vec = realloc(*vec, capacity * info->elem_size);
-  if (new_vec == NULL) {
+  void* new_dataPtr = realloc(*data, capacity * info->elem_size);
+  if (new_dataPtr == NULL) {
     return false;
   }
-  *vec = new_vec;
+  *data = new_dataPtr;
   return true;
 }
 
-bool Vec_Resize(void** vec, struct Vec_Info* info, const size_t size) {
+bool Vec_Resize(void** data, struct Vec_Info* info, const size_t size) {
   if (size > info->capacity) {
     info->capacity = ceilf((float)size / info->growth * info->growth);
-    void* new_vec = realloc(*vec, info->capacity * info->elem_size);
-    if (new_vec == NULL) {
+    void* new_dataPtr = realloc(*data, info->capacity * info->elem_size);
+    if (new_dataPtr == NULL) {
       return false;
     }
-    *vec = new_vec;
+    *data = new_dataPtr;
   }
   info->size = size;
   return true;
 }
 
-bool Vec_Shrink_To_Fit(void** vec, struct Vec_Info* info) {
+bool Vec_Shrink_To_Fit(void** data, struct Vec_Info* info) {
   if (info->capacity > info->size) {
-    void* new_vec = realloc(*vec, info->size * info->elem_size);
-    if (new_vec == NULL) {
+    void* new_dataPtr = realloc(*data, info->size * info->elem_size);
+    if (new_dataPtr == NULL) {
       return false;
     }
     info->capacity = info->size;
-    *vec = new_vec;
+    *data = new_dataPtr;
   }
   return true;
 }
 
-bool Vec_Insert(void** vec, struct Vec_Info* info, const size_t pos, const void* data, const size_t size) {
+bool Vec_Insert(void** data, struct Vec_Info* info, const size_t pos, const void* insert_data, const size_t insert_size) {
   if (pos > info->size) {
     return false;
   }
 
   const size_t old_size = info->size;
-  if (!Vec_Resize(vec, info, old_size + size)) {
+  if (!Vec_Resize(data, info, old_size + insert_size)) {
     return false;
   }
 
-  memmove(*vec + (pos + size) * info->elem_size, *vec + pos * info->elem_size, (old_size - pos) * info->elem_size);
-  memcpy(*vec + pos * info->elem_size, data, size * info->elem_size);
+  memmove(*data + (pos + insert_size) * info->elem_size, *data + pos * info->elem_size, (old_size - pos) * info->elem_size);
+  memcpy(*data + pos * info->elem_size, insert_data, insert_size * info->elem_size);
   return true;
 }
 
-size_t Vec_Erase(void** vec, struct Vec_Info* info, const size_t pos, size_t count) {
+size_t Vec_Erase(void** data, struct Vec_Info* info, const size_t pos, size_t count) {
   const size_t new_size = info->size - count;
   const size_t available = info->size - pos;
   if (count > available) {
     count = available;
   }
 
-  memmove(*vec + pos * info->elem_size, *vec + (pos + count) * info->elem_size, (new_size - pos) * info->elem_size);
+  memmove(*data + pos * info->elem_size, *data + (pos + count) * info->elem_size, (new_size - pos) * info->elem_size);
   info->size = new_size;
   return count;
 }

@@ -12,6 +12,7 @@ add_compile_options(-O3)
 add_library(Vector STATIC
         src/VecIO.c
         src/Vector.c
+        src/String.c
 )
 
 add_executable(Test test/test.c)
