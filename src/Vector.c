@@ -4,7 +4,7 @@
 
 #define ceilf(value) ((size_t)value + (value > (size_t)value))
 
-bool Vec_Init(void** data, struct Vec_Info* info, const size_t elem_size, const size_t growth) {
+bool Vec_Create(void** data, struct Vec_Info* info, const size_t elem_size, const size_t growth) {
   *data = malloc(growth * elem_size);
   if (*data == NULL) {
     return false;
@@ -15,6 +15,17 @@ bool Vec_Init(void** data, struct Vec_Info* info, const size_t elem_size, const 
   info->capacity = growth;
   info->growth = growth;
 
+  return true;
+}
+
+bool Vec_Set(void** data, struct Vec_Info* info, const void* set_data, const struct Vec_Info* set_info) {
+  const size_t total_bytes = set_info->growth * set_info->elem_size;
+  *data = malloc(total_bytes);
+  if (*data == NULL) {
+    return false;
+  }
+  memcpy(*data, set_data, total_bytes);
+  *info = *set_info;
   return true;
 }
 
@@ -85,8 +96,10 @@ bool Vec_Insert(void** data, struct Vec_Info* info, const size_t pos, const void
     return false;
   }
 
-  memmove(*data + (pos + insert_size) * info->elem_size, *data + pos * info->elem_size, (old_size - pos) * info->elem_size);
-  memcpy(*data + pos * info->elem_size, insert_data, insert_size * info->elem_size);
+  const size_t pos_bytes = pos * info->elem_size;
+
+  memmove(*data + (pos + insert_size) * info->elem_size, *data + pos_bytes, (old_size - pos) * info->elem_size);
+  memcpy(*data + pos_bytes, insert_data, insert_size * info->elem_size);
   return true;
 }
 

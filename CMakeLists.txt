@@ -13,6 +13,7 @@ add_library(Vector STATIC
         src/VecIO.c
         src/Vector.c
         src/String.c
+        include/Vector/String.h
 )
 
 add_executable(Test test/test.c)

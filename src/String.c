@@ -10,7 +10,7 @@ struct String {
 };
 
 bool Str_Set(struct String* str, const char* c_str) {
-  str->len = strlen(c_str) + 1;
+  str->len = strlen(c_str);
 
   if (str->data == NULL) {
     str->data = malloc(str->len);
@@ -28,8 +28,3 @@ bool Str_Set(struct String* str, const char* c_str) {
   return true;
 }
 
-int main() {
-  struct String str;
-  Str_Set(&str, "Hello");
-  printf("%s\n", str.data);
-}

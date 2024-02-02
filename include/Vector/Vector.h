@@ -1,4 +1,10 @@
-#pragma once
+#ifndef VECTOR_H
+#define VECTOR_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -13,52 +19,66 @@ struct Vec_Info {
 };
 
 /**
- * @brief Initializes A Vector
- * @param data The Pointer to the Vector
+ * @brief Initializes a Vector
+ * @param data The Pointer to the Vector Data
  * @param info The Pointer to the Vec_Info
  * @param elem_size The Size of each element in bytes
  * @param growth The Growth Factor
  * @return Success
  */
-bool Vec_Init(void** data, struct Vec_Info* info, size_t elem_size, size_t growth);
+bool Vec_Create(void **data, struct Vec_Info *info, size_t elem_size, size_t growth);
 
+/**
+ * @brief Initializes a Vector
+ * @param data The Pointer to the Vector Data
+ * @param info The Pointer to the Vec_Info
+ * @param set_data The Set Vector's Data
+ * @param info The Pointer to the Set Vector's Vec_Info
+ * @return Success
+ */
+bool Vec_Set(void **data, struct Vec_Info *info, const void *set_data, const struct Vec_Info *set_info);
+
+/**
+* @brief Deallocated a Vector
+* @param data The Vector Data
+*/
 #define Vec_Free(data) free(data)
 
 /**
  * @brief Reserves Size for the Vector
- * @param data The Pointer to the Vector
+ * @param data The Pointer to the Vector Data
  * @param info The Pointer to the Vec_Info
  * @param capacity The new total Capacity
  * @return Success
  */
-bool Vec_Reserve(void** data, struct Vec_Info* info, size_t capacity);
+bool Vec_Reserve(void **data, struct Vec_Info *info, size_t capacity);
 
 /**
  * @brief Resizes the Vector | Uninitialized bytes will be set to 0
- * @param data The Pointer to the Vector
+ * @param data The Pointer to the Vector Data
  * @param info The Pointer to the Vec_Info
  * @param size The new total size
  * @return Success
  */
-bool Vec_Resize(void** data, struct Vec_Info* info, size_t size);
+bool Vec_Resize(void **data, struct Vec_Info *info, size_t size);
 
 /**
  * @brief Shrinks the Vector by removing unused capacity
- * @param data The Pointer to the Vector
+ * @param data The Pointer to the Vector Data
  * @param info The Pointer to the Vec_Info
  * @return Success
  */
-bool Vec_Shrink_To_Fit(void** data, struct Vec_Info* info);
+bool Vec_Shrink_To_Fit(void **data, struct Vec_Info *info);
 
 /**
  * @brief Pushes a amount of elements to the Vector
- * @param data The Pointer to the Vector
+ * @param data The Pointer to the Vector Data
  * @param info The Pointer to the Vec_Info
  * @param push_data The Pushed Data
  * @param push_size The Size of the Pushed Data
  * @return Success
  */
-bool Vec_Push(void** data, struct Vec_Info* info, const void* push_data, size_t push_size);
+bool Vec_Push(void **data, struct Vec_Info *info, const void *push_data, size_t push_size);
 
 /**
  * @brief Pops a amount of elements to the Vector
@@ -66,28 +86,28 @@ bool Vec_Push(void** data, struct Vec_Info* info, const void* push_data, size_t 
  * @param count The Number of elements to pop
  * @return Number of Elements poped
  */
-size_t Vec_Pop(struct Vec_Info* info, size_t count);
+size_t Vec_Pop(struct Vec_Info *info, size_t count);
 
 /**
  * @brief Insert a amount of elements to the Vector in the current size
- * @param data The Pointer to the Vector
+ * @param data The Pointer to the Vector Data
  * @param info The Pointer to the Vec_Info
  * @param pos The Position Index to insert
  * @param insert_data The Inserted Data
  * @param insert_size The Size of the Inserted Data
  * @return Success
  */
-bool Vec_Insert(void** data, struct Vec_Info* info, size_t pos, const void* insert_data, size_t insert_size);
+bool Vec_Insert(void **data, struct Vec_Info *info, size_t pos, const void *insert_data, size_t insert_size);
 
 /**
  * @brief Erases a amount of elements to the Vector in the current size
- * @param data The Pointer to the Vector
+ * @param data The Pointer to the Vector Data
  * @param info The Pointer to the Vec_Info
  * @param pos The Position Index to insert
  * @param count The Number of Elements to erase
  * @return Number of Erased Elements
  */
-size_t Vec_Erase(void** data, struct Vec_Info* info, size_t pos, size_t count);
+size_t Vec_Erase(void **data, struct Vec_Info *info, size_t pos, size_t count);
 
 /**
  * @brief Gives the index of the first element of the Vector | Returs -1 if vector Size is 0
@@ -127,49 +147,70 @@ size_t Vec_Erase(void** data, struct Vec_Info* info, size_t pos, size_t count);
 
 // Pre Defined Vectors
 
+struct Bool_Vec {
+  bool *data;
+  struct Vec_Info info;
+};
+
+struct Char_Vec {
+  char *data;
+  struct Vec_Info info;
+};
+
 struct Int_Vec {
- int* data;
- struct Vec_Info info;
+  int *data;
+  struct Vec_Info info;
+};
+
+struct UInt_Vec {
+  unsigned *data;
+  struct Vec_Info info;
 };
 
 struct Int8_Vec {
- int8_t* data;
- struct Vec_Info info;
+  int8_t *data;
+  struct Vec_Info info;
 };
 
 struct Int16_Vec {
- int16_t* data;
- struct Vec_Info info;
+  int16_t *data;
+  struct Vec_Info info;
 };
 
 struct Int32_Vec {
- int32_t* data;
- struct Vec_Info info;
+  int32_t *data;
+  struct Vec_Info info;
 };
 
 struct UInt8_Vec {
- uint8_t* data;
- struct Vec_Info info;
+  uint8_t *data;
+  struct Vec_Info info;
 };
 
 struct UInt16_Vec {
- uint16_t* data;
- struct Vec_Info info;
+  uint16_t *data;
+  struct Vec_Info info;
 };
 
 struct UInt32_Vec {
- uint32_t* data;
- struct Vec_Info info;
+  uint32_t *data;
+  struct Vec_Info info;
 };
 
 #ifdef __INT64_TYPE__
 struct Int64_Vec {
- int64_t* data;
- struct Vec_Info info;
+  int64_t *data;
+  struct Vec_Info info;
 };
 
 struct UInt64_Vec {
- uint64_t* data;
- struct Vec_Info info;
+  uint64_t *data;
+  struct Vec_Info info;
 };
+#endif
+
+#ifdef __cplusplus
+  }
+#endif
+
 #endif

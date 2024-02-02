@@ -1,4 +1,10 @@
-#pragma once
+#ifndef VECIO_H
+#define VECIO_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 #include <Vector/Vector.h>
 #include <stdio.h>
 
@@ -10,7 +16,7 @@
  * @param file The File Descriptor
  * @returns Success
 */
-bool VecIO_Write_Buff(const void* buff, size_t elem_size, size_t size, FILE* file);
+bool VecIO_Write_Buff(const void *buff, size_t elem_size, size_t size, FILE *file);
 
 /**
  * @brief Reads a Buffer from a file
@@ -21,7 +27,7 @@ bool VecIO_Write_Buff(const void* buff, size_t elem_size, size_t size, FILE* fil
  * @param file The File Descriptor
  * @returns Success
  */
-bool VecIO_Read_Buff(void* buff, size_t buff_capacity, size_t elem_size, size_t* size, FILE* file);
+bool VecIO_Read_Buff(void *buff, size_t buff_capacity, size_t elem_size, size_t *size, FILE *file);
 
 
 /**
@@ -31,7 +37,7 @@ bool VecIO_Read_Buff(void* buff, size_t buff_capacity, size_t elem_size, size_t*
  * @param file The File Descriptor
  * @returns Success
  */
-bool VecIO_Write(const void* vec, const struct Vec_Info* info, FILE* file);
+bool VecIO_Write(const void *vec, const struct Vec_Info *info, FILE *file);
 
 /**
  * @brief Reads a Vector from a file
@@ -42,7 +48,7 @@ bool VecIO_Write(const void* vec, const struct Vec_Info* info, FILE* file);
  * @param file The File Descriptor
  * @returns Success
  */
-bool VecIO_Read(void** vec, struct Vec_Info** info, size_t elem_size, size_t growth, FILE* file);
+bool VecIO_Read(void **vec, struct Vec_Info **info, size_t elem_size, size_t growth, FILE *file);
 
 /**
  * @brief Skips A Specific Numbers Vectors/Buffers From a file
@@ -50,4 +56,10 @@ bool VecIO_Read(void** vec, struct Vec_Info** info, size_t elem_size, size_t gro
  * @param file The File Descriptor
  * @returns The Number of Vectors/Buffers Skiped
 */
-size_t VecIO_Skip(size_t count, FILE* file);
+size_t VecIO_Skip(size_t count, FILE *file);
+
+#ifdef __cplusplus
+ }
+#endif
+
+#endif
