@@ -1,24 +1,19 @@
 #include <Vector/Vector.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define ceilf(value) ((size_t)value + (value > (size_t)value))
 
-bool Vec_Create(void** data, struct Vec_Info** info, const uint16_t elem_size, const uint32_t growth) {
+bool Vec_Init(void** data, struct Vec_Info* info, const size_t elem_size, const size_t growth) {
   *data = malloc(growth * elem_size);
   if (*data == NULL) {
     return false;
   }
 
-  (*info) = malloc(sizeof(struct Vec_Info));
-  if (*info == NULL) {
-    free(*data);
-    return false;
-  }
-
-  (*info)->size = 0;
-  (*info)->elem_size = elem_size;
-  (*info)->capacity = growth;
-  (*info)->growth = growth;
+  info->size = 0;
+  info->elem_size = elem_size;
+  info->capacity = growth;
+  info->growth = growth;
 
   return true;
 }

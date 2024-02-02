@@ -62,7 +62,7 @@ bool VecIO_Write(const void* vec, const struct Vec_Info* info, FILE* file) {
 }
 
 bool VecIO_Read(void** vec, struct Vec_Info** info, const size_t elem_size, const size_t growth, FILE* file) {
-  if (!Vec_Create(vec, info, elem_size, growth)) {
+  if (!Vec_Init(vec, info, elem_size, growth)) {
     return false;
   }
 
