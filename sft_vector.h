@@ -3,15 +3,28 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "def.h"
+
+#ifdef _MSC_VER
+#define TYPEOF(expr) __typeof(expr)
+#else
+#define TYPEOF(expr) typeof(expr)
+#endif
 
 typedef struct {
   size_t size;
   size_t cap;
-  size_t type_size;
 } __vec_info;
 
-#define Vector(T) (__vec_init(sizeof(T), 0, 1))
+#define Vector(Name, T) T* Name = NULL;\
+do {\
+  __vec_info* info = malloc(type_size * size + sizeof(__vec_info));
+
+  if (info) {
+    info->size = size;
+    info->cap = cap;
+    info->type_size = type_size;
+    vec = info + 1;}
+} while(0)
 #define Vec_InitCap(T, Cap) (__vec_init(sizeof(T), 0, Cap))
 #define Vec_InitSize(T, Size) (__vec_init(sizeof(T), Size, Size));
 #define Vec_InitList(Name, T, ...) T* Name = NULL;\
@@ -22,12 +35,10 @@ do {\
   if (info) {\
     info->size = sizeof(array) / sizeof(T);\
     info->cap = sizeof(array) / sizeof(T);\
-    info->type_size = sizeof(T);\
     Name = (T*)(info + 1);\
     memcpy(Name, array, sizeof(array));\
   }\
 } while(0)
-void* __vec_init(size_t type_size, size_t size, size_t cap);
 
 #define Vec_Free(vec) (free((__vec_info*)vec - 1))
 
