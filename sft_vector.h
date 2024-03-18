@@ -1,76 +1,88 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef SFT_VECTOR_H
+#define SFT_VECTOR_H
 
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _MSC_VER
-#define TYPEOF(expr) __typeof(expr)
-#else
-#define TYPEOF(expr) typeof(expr)
-#endif
-
 typedef struct {
   size_t size;
   size_t cap;
-} __vec_info;
+} sft_vec_info_t;
 
-#define Vector(Name, T) T* Name = NULL;\
+#define sft_vector(name, t) t* name = NULL;\
 do {\
-  __vec_info* info = malloc(type_size * size + sizeof(__vec_info));
-
-  if (info) {
-    info->size = size;
-    info->cap = cap;
-    info->type_size = type_size;
-    vec = info + 1;}
-} while(0)
-#define Vec_InitCap(T, Cap) (__vec_init(sizeof(T), 0, Cap))
-#define Vec_InitSize(T, Size) (__vec_init(sizeof(T), Size, Size));
-#define Vec_InitList(Name, T, ...) T* Name = NULL;\
-do {\
-  const T array[] = {__VA_ARGS__};\
-  __vec_info* info = malloc(sizeof(array) + sizeof(__vec_info));\
+  sft_vec_info_t* info = malloc(sizeof(t) + sizeof(sft_vec_info_t));\
 \
   if (info) {\
-    info->size = sizeof(array) / sizeof(T);\
-    info->cap = sizeof(array) / sizeof(T);\
-    Name = (T*)(info + 1);\
-    memcpy(Name, array, sizeof(array));\
+    info->size = 0;\
+    info->cap = 1;\
+    name = info + 1;\
   }\
 } while(0)
 
-#define Vec_Free(vec) (free((__vec_info*)vec - 1))
-
-#define Vec_Resize(Vec, Size) do {\
-  __vec_info* info = (__vec_info*)Vec - 1;\
-  if (Size > info->cap) {\
-    __vec_info* new_info = realloc(info, Size * info->type_size + sizeof(__vec_info));\
-    info = new_info;\
-    info->cap = Size;\
-    Vec = (TYPEOF(Vec))(info + 1);\
+#define sft_vector_init_cap(name, t, cap) t* name = NULL;\
+do {\
+  sft_vec_info_t* info = malloc((cap) ? sizeof(t) * cap : sizeof(t) + sizeof(sft_vec_info_t));\
+\
+  if (info) {\
+    info->size = 0;\
+    info->cap = (cap) ? cap : 1;\
+    name = info + 1;\
   }\
-  info->size = Size;\
-} while (0)
+} while(0)
 
-#define Vec_Reserve(Vec, Capacity) do {\
-  __vec_info* info = (__vec_info*)Vec - 1;\
-  if (Capacity > info->cap) {\
-    __vec_info* new_info = realloc(info, Capacity * info->type_size + sizeof(__vec_info));\
-    if (new_info) {\
-      new_info->cap = Capacity;\
-      Vec = (TYPEOF(Vec))(new_info + 1);\
+#define sft_vector_init(name, t, count, init) t* name = NULL;\
+do {\
+  sft_vec_info_t* info = malloc(sizeof(t) * count + sizeof(sft_vec_info_t));\
+\
+  if (info) {\
+    info->size = count;\
+    info->cap = count;\
+    name = (t*)(info + 1);\
+\
+    for (int i = 0; i < count; ++i) {\
+      name[i] = init;\
     }\
   }\
+} while(0)
+
+#define sft_vector_init_list(name, t, ...) t* name = NULL;\
+do {\
+  const t array[] = {__VA_ARGS__};\
+  sft_vec_info_t* info = malloc(sizeof(array) + sizeof(sft_vec_info_t));\
+\
+  if (info) {\
+    info->size = sizeof(array) / sizeof(t);\
+    info->cap = sizeof(array) / sizeof(t);\
+    name = (t*)(info + 1);\
+    memcpy(name, array, sizeof(array));\
+  }\
+} while(0)
+
+#define sft_vector_free(vec) (free((sft_vec_info_t*)vec - 1))
+
+#define sft_vector_reserve(vec, _size) do {\
+  sft_vec_info_t* info = (sft_vec_info_t*)vec - 1;\
+  if (_size != info->cap) {\
+    sft_vec_info_t* new_info = realloc(info, _size * sizeof(*vec) + sizeof(sft_vec_info_t));\
+    info = new_info;\
+    info->cap = _size;\
+    vec = (void*)(info + 1);\
+  }\
 } while (0)
 
-#define Vec_Size(Vec) (((__vec_info*)Vec - 1)->size)
-#define Vec_Cap(Vec) (((__vec_info*)Vec - 1)->cap)
+#define sft_vector_resize(vec, _size) do {\
+  sft_vec_info_t* info = (sft_vec_info_t*)vec - 1;\
+  if (_size > info->cap || _size < info->size) {\
+    sft_vec_info_t* new_info = realloc(info, _size * sizeof(*vec) + sizeof(sft_vec_info_t));\
+    info = new_info;\
+    info->cap = _size;\
+    vec = (void*)(info + 1);\
+  }\
+  info->size = _size;\
+} while (0)
 
-#define Vec_Empty(Vec) (!(((__vec_info*)Vec - 1)->size))
-#define Vec_Clear(Vec) (((__vec_info*)Vec - 1)->size = 0)
-
-#define Vec_Back(Vec) (Vec + ((__vec_info*)Vec - 1)->size - 1)
+#define sft_vector_info(vec) ((sft_vec_info_t*)vec - 1)
 
 #define Vec_Shrink_To_Fit(Vec) do {\
   __vec_info* info = (__vec_info*)Vec - 1;\
