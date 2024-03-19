@@ -80,8 +80,8 @@ do {\
 
 #define sft_vec_pop(vec) (vec[--((sft_vector_info_t*)vec - 1)->size])
 
-#define SFT_VECTOR_MERGE_POS_FRONT 0
-#define SFT_VECTOR_MERGE_POS_END 1
+#define SFT_VECTOR_MERGE_FRONT 0
+#define SFT_VECTOR_MERGE_END 1
 
 #define sft_vector_merge(vec, arr, _size, pos, offset) do {\
   sft_vector_info_t* info = (sft_vector_info_t*)vec - 1;\
