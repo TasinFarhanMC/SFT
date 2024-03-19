@@ -22,13 +22,13 @@ do {\
 
 #define sft_vector_free(vec) (free((sft_vector_info_t*)vec - 1))
 
-#define sft_vector_reserve(vec, cap) do {\
+#define sft_vector_reserve(vec, _cap) do {\
   sft_vector_info_t* info = (sft_vector_info_t*)vec - 1;\
-  if (cap != info->cap) {\
-    sft_vector_info_t* new_info = realloc(info, cap * sizeof(*vec) + sizeof(sft_vector_info_t));\
+  if (_cap != info->cap) {\
+    sft_vector_info_t* new_info = realloc(info, _cap * sizeof(*vec) + sizeof(sft_vector_info_t));\
     if (new_info) {\
-      new_info->cap = cap;\
-      new_info->size = (new_info->size > cap) ? cap : new_info->size;\
+      new_info->cap = _cap;\
+      new_info->size = (new_info->size > _cap) ? _cap : new_info->size;\
       vec = (void*)(new_info + 1);\
     } else {\
       free(info);\
@@ -42,7 +42,7 @@ do {\
   if (_size > info->cap) {\
     sft_vector_info_t* new_info = realloc(info, _size * sizeof(*vec) + sizeof(sft_vector_info_t));\
     if (new_info) {\
-      new_info->cap = cap;\
+      new_info->cap = _size;\
       new_info->size = _size;\
       vec = (void*)(new_info + 1);\
     } else {\
@@ -83,33 +83,86 @@ do {\
 #define SFT_VECTOR_MERGE_POS_FRONT 0
 #define SFT_VECTOR_MERGE_POS_END 1
 
-#define sft_vector_merge(vec, arr, _size, pos, offset) do {
-  sft_vector_info_t* info = (sft_vector_info_t*)vec - 1;
-
-  if (pos) {
-    if (offset) {
-
-    } else {
-      const size_t total_size = info->size + _size;
+#define sft_vector_merge(vec, arr, _size, pos, offset) do {\
+  sft_vector_info_t* info = (sft_vector_info_t*)vec - 1;\
+\
+  if (pos) {\
+    if (offset) {\
+      const size_t total_size = info->size + _size;\
       if (total_size > info->cap) {\
         sft_vector_info_t* new_info = realloc(info, total_size * sizeof(*vec) + sizeof(sft_vector_info_t));\
         if (new_info) {\
           new_info->cap = total_size;\
           vec = (void*)(new_info + 1);\
-          memcpy(vec + new_info->size - 1, arr, total_size * sizeof(*vec));
+          memmove(vec + info->size + _size - offset, vec + info->size - offset, offset * sizeof(*vec));\
+          memcpy(vec + info->size - offset, arr, _size * sizeof(*vec));\
           new_info->size = total_size;\
         } else {\
           free(info);\
           vec = NULL;\
         }\
       } else {\
-        memcpy(vec + info->size - 1, arr, total_size * sizeof(*vec));
+        memmove(vec + info->size + _size - offset, vec + info->size - offset, offset * sizeof(*vec));\
+        memcpy(vec + info->size - offset, arr, _size * sizeof(*vec));\
         info->size = total_size;\
       }\
-    }
-  } else {
-  
-  }
-}
+    } else {\
+      const size_t total_size = info->size + _size;\
+      if (total_size > info->cap) {\
+        sft_vector_info_t* new_info = realloc(info, total_size * sizeof(*vec) + sizeof(sft_vector_info_t));\
+        if (new_info) {\
+          new_info->cap = total_size;\
+          vec = (void*)(new_info + 1);\
+          memcpy(vec + new_info->size, arr, _size * sizeof(*vec));\
+          new_info->size = total_size;\
+        } else {\
+          free(info);\
+          vec = NULL;\
+        }\
+      } else {\
+        memcpy(vec + info->size, arr, _size * sizeof(*vec));\
+        info->size = total_size;\
+      }\
+    }\
+  } else {\
+    if (offset == info->size) {\
+      const size_t total_size = info->size + _size;\
+      if (total_size > info->cap) {\
+        sft_vector_info_t* new_info = realloc(info, total_size * sizeof(*vec) + sizeof(sft_vector_info_t));\
+        if (new_info) {\
+          new_info->cap = total_size;\
+          vec = (void*)(new_info + 1);\
+          memcpy(vec + new_info->size, arr, _size * sizeof(*vec));\
+          new_info->size = total_size;\
+        } else {\
+          free(info);\
+          vec = NULL;\
+        }\
+      } else {\
+        memcpy(vec + info->size, arr, _size * sizeof(*vec));\
+        info->size = total_size;\
+      }\
+    } else {\
+      const size_t total_size = info->size + _size;\
+      if (total_size > info->cap) {\
+        sft_vector_info_t* new_info = realloc(info, total_size * sizeof(*vec) + sizeof(sft_vector_info_t));\
+        if (new_info) {\
+          new_info->cap = total_size;\
+          vec = (void*)(new_info + 1);\
+          memmove(vec + _size, vec + offset, info->size * sizeof(*vec));\
+          memcpy(vec, arr, _size * sizeof(*vec));\
+          new_info->size = total_size;\
+        } else {\
+          free(info);\
+          vec = NULL;\
+        }\
+      } else {\
+        memmove(vec + _size, vec + offset, info->size * sizeof(*vec));\
+        memcpy(vec, arr, _size * sizeof(*vec));\
+        info->size = total_size;\
+      }\
+    }\
+  }\
+} while(0)
 
 #endif
