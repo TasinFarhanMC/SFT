@@ -44,24 +44,24 @@ bool sft_input_gets(char* buffer, size_t size, bool inc_newline) {
   if (inc_newline) {
     if (buffer[size - 2] == 0 || buffer[size - 2] == '\n') {
       return true;
-    } else {
-      scanf("%*s");
-      return false;
-    }
-  } else {
-    if (buffer[size - 2] == '\n') {
-      buffer[size - 2] = 0;
-      return true;
     }
 
-    if (buffer[size - 2] == 0) {
-      buffer[strlen(buffer) - 2] = 0;
-      return true;
-    } else {
-      scanf("%*s");
-      return false;
-    }
+    scanf("%*s");
+    return false;
   }
+  
+  if (buffer[size - 2] == '\n') {
+    buffer[size - 2] = 0;
+    return true;
+  }
+
+  if (buffer[size - 2] == 0) {
+    buffer[strlen(buffer) - 2] = 0;
+    return true;
+  }
+
+  scanf("%*s");
+  return false;
 }
 
 bool sft_input_fgets(char* buffer, size_t size, bool inc_newline, FILE* file) {
@@ -71,24 +71,24 @@ bool sft_input_fgets(char* buffer, size_t size, bool inc_newline, FILE* file) {
   if (inc_newline) {
     if (buffer[size - 2] == 0 || buffer[size - 2] == '\n') {
       return true;
-    } else {
-      scanf("%*s");
-      return false;
-    }
-  } else {
-    if (buffer[size - 2] == '\n') {
-      buffer[size - 2] = 0;
-      return true;
     }
 
-    if (buffer[size - 2] == 0) {
-      buffer[strlen(buffer) - 2] = 0;
-      return true;
-    } else {
-      scanf("%*s");
-      return false;
-    }
+    scanf("%*s");
+    return false;
   }
+
+  if (buffer[size - 2] == '\n') {
+    buffer[size - 2] = 0;
+    return true;
+  }
+
+  if (buffer[size - 2] == 0) {
+    buffer[strlen(buffer) - 2] = 0;
+    return true;
+  }
+
+  scanf("%*s");
+  return false;
 }
 
 #endif
