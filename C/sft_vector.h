@@ -1,6 +1,10 @@
 #ifndef SFT_VECTOR_H
 #define SFT_VECTOR_H
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -164,5 +168,9 @@ do {\
     }\
   }\
 } while(0)
+
+#ifdef __cplusplus
+  }
+#endif
 
 #endif

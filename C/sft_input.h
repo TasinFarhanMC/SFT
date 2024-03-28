@@ -1,6 +1,10 @@
 #ifndef SFT_INPUT_H
 #define SFT_INPUT_H
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -92,4 +96,9 @@ bool sft_input_fgets(char* buffer, size_t size, bool inc_newline, FILE* file) {
 }
 
 #endif
+
+#ifdef __cplusplus
+  }
+#endif
+
 #endif
